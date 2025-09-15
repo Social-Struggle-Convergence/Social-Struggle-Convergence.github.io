@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Social Struggles Convergence</title>
+  <style>
+    :root{
+      --blood-red: #7a0b0b; /* deep blood red */
+      --accent: #ffffff;
+      --muted: #f3f3f3;
+      --thumb-bg: #ffffff11;
+      --thumb-active: #ffffff22;
+      --gap: 12px;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+
+    body{
+      margin:0;
+      color:#111;
+      background: linear-gradient(180deg,#fff 0%, #fbfbfb 100%);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* Header */
+    header{
+      background: var(--blood-red);
+      color: var(--accent);
+      padding: 28px 20px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      align-items:flex-start;
+    }
+    header h1{
+      margin:0;
+      font-size: clamp(22px,4vw,34px);
+      letter-spacing:0.4px;
+      font-weight:700;
+      line-height:1.05;
+      color: var(--accent);
+    }
+    header p.lead{
+      margin:0;
+      color: #fff;
+      opacity:0.95;
+      max-width:900px;
+      font-size: 15px;
+    }
+
+    /* Thumbnail row */
+    .thumb-row{
+      display:flex;
+      gap:var(--gap);
+      margin:18px 20px;
+      align-items:center;
+      overflow:auto;
+      padding-bottom:6px;
+    }
+
+    .thumb {
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      min-width:160px;
+      padding:10px 14px;
+      border-radius:8px;
+      background:var(--thumb-bg);
+      border:1px solid #00000008;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+      outline: none;
+      color: #111;
+      font-weight:600;
+      font-size:14px;
+    }
+
+    .thumb svg{ width:34px; height:34px; flex:0 0 34px; border-radius:6px; background: transparent; }
+
+    .thumb:focus{ box-shadow:0 4px 18px rgba(0,0,0,0.08); transform: translateY(-2px); }
+
+    .thumb[aria-pressed="true"]{
+      background: var(--thumb-active);
+      box-shadow: 0 8px 20px rgba(122,11,11,0.12);
+      transform: translateY(-3px);
+      color: var(--accent);
+      border-color: rgba(255,255,255,0.12);
+    }
+
+    .thumb[disabled]{
+      opacity:0.55;
+      cursor:not-allowed;
+      transform:none;
+    }
+
+    /* Content area */
+    main{
+      padding: 18px 20px 60px 20px;
+      max-width:1100px;
+      margin:0 auto;
+    }
+
+    .panel{
+      margin-top:10px;
+      background: #fff;
+      border-radius:10px;
+      padding:18px;
+      box-shadow: 0 6px 18px rgba(18,18,18,0.04);
+      display:none;
+    }
+    .panel.active{ display:block; }
+
+    /* Thumbnail small label under icon for mobile */
+    .thumb .label{
+      display:block;
+    }
+    .thumb .meta{
+      display:block;
+      font-weight:400;
+      font-size:12px;
+      opacity:0.8;
+    }
+
+    /* Responsive */
+    @media (max-width:640px){
+      .thumb { min-width:140px; padding:10px; font-size:13px; }
+      header { padding:18px 12px; }
+      main { padding:12px; }
+    }
+
+    /* small helper styles inside panels */
+    .grid {
+      display:grid;
+      grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+      gap:14px;
+      margin-top:12px;
+    }
+    .card{
+      padding:12px;
+      border-radius:8px;
+      background: #fbfbfb;
+      border:1px solid #eee;
+    }
+    .muted { color:#616161; font-size:14px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Social Struggles Convergence</h1>
+    <p class="lead">
+      This site helps people find independent media, join communities, discover actionable ideas for impact, and locate accessible tools that support their struggles.
+    </p>
+  </header>
+
+  <!-- Thumbnail (tab-like) horizontal list -->
+  <nav class="thumb-row" role="tablist" aria-label="Primary navigation thumbnails">
+    <!-- Each thumb is a button with a data-panel attribute pointing to the content panel id -->
+    <button class="thumb" id="thumb-info" role="tab" aria-controls="panel-info" aria-selected="true" aria-pressed="true" data-panel="panel-info">
+      <!-- placeholder SVG icon -->
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <rect x="2" y="3" width="20" height="18" rx="2" fill="currentColor" opacity="0.14"></rect>
+        <path d="M6 7h12M6 12h12M6 17h7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+      </svg>
+      <span>
+        <span class="label">Information Sources</span>
+        <span class="meta">Independent media & research</span>
+      </span>
+    </button>
+
+    <button class="thumb" id="thumb-people" role="tab" aria-controls="panel-people" aria-selected="false" aria-pressed="false" data-panel="panel-people">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="10" cy="8.5" r="2.2" fill="currentColor" opacity="0.14"></circle>
+        <path d="M3 21c0-3.6 3.7-5.5 7-5.5s7 1.9 7 5.5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"></path>
+      </svg>
+      <span>
+        <span class="label">Main Personalities</span>
+        <span class="meta">Profiles & influence</span>
+      </span>
+    </button>
+
+    <button class="thumb" id="thumb-communities" role="tab" aria-controls="panel-communities" aria-selected="false" aria-pressed="false" data-panel="panel-communities">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="3" y="3" width="8" height="8" fill="currentColor" opacity="0.14"></rect>
+        <rect x="13" y="3" width="8" height="8" fill="currentColor" opacity="0.14"></rect>
+        <rect x="3" y="13" width="8" height="8" fill="currentColor" opacity="0.14"></rect>
+        <rect x="13" y="13" width="8" height="8" fill="currentColor" opacity="0.14"></rect>
+      </svg>
+      <span>
+        <span class="label">Communities</span>
+        <span class="meta">Local & online groups</span>
+      </span>
+    </button>
+
+    <button class="thumb" id="thumb-glossary" role="tab" aria-controls="panel-glossary" aria-selected="false" aria-pressed="false" data-panel="panel-glossary">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M6 4h12v12H6z" fill="currentColor" opacity="0.12"></path>
+        <path d="M8 8h8M8 12h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"></path>
+      </svg>
+      <span>
+        <span class="label">Glossary & Definitions</span>
+        <span class="meta">Key concepts explained</span>
+      </span>
+    </button>
+
+    <button class="thumb" id="thumb-tools" role="tab" aria-controls="panel-tools" aria-selected="false" aria-pressed="false" data-panel="panel-tools">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M21 7l-9 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+        <circle cx="7" cy="17" r="3" fill="currentColor" opacity="0.12"></circle>
+      </svg>
+      <span>
+        <span class="label">Tools</span>
+        <span class="meta">Accessible resources</span>
+      </span>
+    </button>
+  </nav>
+
+  <main>
+    <!-- Panels: each panel has content; only the active panel is shown -->
+    <section id="panel-info" class="panel active" role="tabpanel" aria-labelledby="thumb-info">
+      <h2>Information Sources</h2>
+      <p class="muted">Curated independent outlets, investigative projects, and reliable
