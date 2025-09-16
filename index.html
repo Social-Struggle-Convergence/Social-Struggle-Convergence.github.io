@@ -150,7 +150,8 @@
   <header>
     <h1>Social Struggles Convergence</h1>
     <p class="lead">
-      This site helps people find independent media, join communities, discover actionable ideas for impact, and locate accessible tools that support their struggles.
+      This will site help people find independent media, join communities, discover actionable ideas for impact, and locate accessible tools that support their struggles.
+      <br> You can contribute to this project and add information to it usign GitHub push request. 
     </p>
   </header>
 
@@ -175,8 +176,8 @@
         <path d="M3 21c0-3.6 3.7-5.5 7-5.5s7 1.9 7 5.5" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"></path>
       </svg>
       <span>
-        <span class="label">Main Personalities</span>
-        <span class="meta">Profiles & influence</span>
+        <span class="label">Inspiring Personalities</span>
+        <span class="meta">Find factual profiles & influence</span>
       </span>
     </button>
 
@@ -189,7 +190,7 @@
       </svg>
       <span>
         <span class="label">Communities</span>
-        <span class="meta">Local & online groups</span>
+        <span class="meta">Discover online and IRL action groups</span>
       </span>
     </button>
 
@@ -200,7 +201,7 @@
       </svg>
       <span>
         <span class="label">Glossary & Definitions</span>
-        <span class="meta">Key concepts explained</span>
+        <span class="meta">Key concepts of activism explained</span>
       </span>
     </button>
 
@@ -211,7 +212,7 @@
       </svg>
       <span>
         <span class="label">Tools</span>
-        <span class="meta">Accessible resources</span>
+        <span class="meta">Free and low-cost tools</span>
       </span>
     </button>
   </nav>
@@ -221,3 +222,187 @@
     <section id="panel-info" class="panel active" role="tabpanel" aria-labelledby="thumb-info">
       <h2>Information Sources</h2>
       <p class="muted">Curated independent outlets, investigative projects, and reliable
+
+      <div class="grid">
+        <div class="card">
+          <strong>Independent News</strong>
+          <p class="muted">List of trusted independent reporters and outlets, with short notes on focus and region.</p>
+        </div>
+        <div class="card">
+          <strong>Investigative Projects</strong>
+          <p class="muted">Long-form investigations, datasets, and collaborative projects useful for evidence-based campaigns.</p>
+        </div>
+        <div class="card">
+          <strong>Research Hubs</strong>
+          <p class="muted">Academic / NGO research that supports movement claims and strategies.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="panel-people" class="panel" role="tabpanel" aria-labelledby="thumb-people">
+      <h2>Main Personalities</h2>
+      <p class="muted">Profiles of influential organizers, journalists, researchers, and movement leaders — context, roles, and contact pointers.</p>
+
+      <div class="grid">
+        <div class="card"><strong>Profile A</strong><p class="muted">Short summary and key works.</p></div>
+        <div class="card"><strong>Profile B</strong><p class="muted">Short summary and key networks.</p></div>
+      </div>
+    </section>
+
+    <section id="panel-communities" class="panel" role="tabpanel" aria-labelledby="thumb-communities">
+      <h2>Communities</h2>
+      <p class="muted">Local chapters, online collectives, mutual aid groups, and how to join or collaborate safely.</p>
+
+      <div class="grid">
+        <div class="card"><strong>Local Groups</strong><p class="muted">Find meetings and points of contact by region.</p></div>
+        <div class="card"><strong>Online Networks</strong><p class="muted">Forums, chat platforms, privacy tips.</p></div>
+      </div>
+    </section>
+
+    <section id="panel-glossary" class="panel" role="tabpanel" aria-labelledby="thumb-glossary">
+      <h2>Glossary & Definitions</h2>
+      <p class="muted">Clear definitions for frequently used terms and contested language in social struggles.</p>
+
+      <div class="grid">
+        <div class="card"><strong>Term 1</strong><p class="muted">Definition and recommended sources.</p></div>
+        <div class="card"><strong>Term 2</strong><p class="muted">Notes on use and alternatives.</p></div>
+      </div>
+    </section>
+
+    <section id="panel-tools" class="panel" role="tabpanel" aria-labelledby="thumb-tools">
+      <h2>Tools</h2>
+      <p class="muted">Accessible tools and templates: communications, legal help, accessibility checklists, mapping, and low-cost technologies.</p>
+
+      <div class="grid">
+        <div class="card"><strong>Comm Kits</strong><p class="muted">Templates for safe messaging and outreach.</p></div>
+        <div class="card"><strong>Accessibility</strong><p class="muted">Tools that improve participation for people with disabilities.</p></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Behavior:
+    // - Only one thumbnail is "enabled" (not disabled) and marked aria-pressed="true".
+    // - Clicking a non-disabled thumb will make it the active one, disable the previously active thumb,
+    //   update aria attributes and show the corresponding panel.
+    // - This implements the user's requirement: "one enabled at a time only, disable the other thumbnails and define what is displayed below".
+    (function(){
+      const thumbs = Array.from(document.querySelectorAll('.thumb'));
+      const panels = Array.from(document.querySelectorAll('.panel'));
+
+      // init: keep first thumb enabled and others enabled too so user can choose.
+      // But we will treat "enabled" visually as aria-pressed="true" and "disabled" attribute on other thumbs.
+      // To obey "one enabled at a time", we will set other thumbs disabled except the initially-active one.
+      const initial = thumbs.find(t => t.getAttribute('aria-pressed') === 'true') || thumbs[0];
+
+      function setActive(newActive){
+        // find previous active
+        const prev = thumbs.find(t => t.getAttribute('aria-pressed') === 'true');
+
+        if(prev && prev !== newActive){
+          prev.setAttribute('aria-pressed', 'false');
+          prev.setAttribute('aria-selected', 'false');
+          // disable previously-active thumb so only the newActive remains enabled (per requirement)
+          prev.disabled = true;
+          prev.setAttribute('aria-disabled', 'true');
+        }
+
+        // enable and set newActive
+        newActive.removeAttribute('disabled');
+        newActive.setAttribute('aria-disabled', 'false');
+        newActive.setAttribute('aria-pressed', 'true');
+        newActive.setAttribute('aria-selected', 'true');
+
+        // show related panel, hide others
+        const panelId = newActive.dataset.panel;
+        panels.forEach(p => {
+          if(p.id === panelId){
+            p.classList.add('active');
+          } else {
+            p.classList.remove('active');
+          }
+        });
+
+        // Set focus to the newly active button for clarity (if it was clicked).
+        newActive.focus();
+      }
+
+      // initialize: disable all except initial (to follow the "one enabled only" instruction)
+      thumbs.forEach(t => {
+        if(t !== initial){
+          t.disabled = true;
+          t.setAttribute('aria-disabled', 'true');
+          t.setAttribute('aria-pressed', 'false');
+          t.setAttribute('aria-selected', 'false');
+        } else {
+          t.disabled = false;
+          t.setAttribute('aria-disabled', 'false');
+          t.setAttribute('aria-pressed', 'true');
+          t.setAttribute('aria-selected', 'true');
+        }
+      });
+
+      // Allow clicks on thumbnails: if disabled, clicking does nothing.
+      thumbs.forEach(t => {
+        t.addEventListener('click', (ev) => {
+          if(t.disabled){
+            // If disabled, we still want users to be able to re-enable it by using a modifier:
+            // Ctrl+Click (or Meta+Click) will force-enable and switch; this keeps normal behavior simple.
+            if(ev.ctrlKey || ev.metaKey){
+              // re-enable previously disabled thumbs so we can change selection
+              // make all non-active enabled so the user can pick, then activate clicked one.
+              thumbs.forEach(x => {
+                x.disabled = false;
+                x.setAttribute('aria-disabled', 'false');
+              });
+              setActive(t);
+              return;
+            }
+            return;
+          }
+          // If the clicked one is already active, nothing to do.
+          if(t.getAttribute('aria-pressed') === 'true') return;
+          setActive(t);
+        });
+
+        // Keyboard support: Enter or Space activates if not disabled.
+        t.addEventListener('keydown', (ev) => {
+          if(ev.key === 'Enter' || ev.key === ' '){
+            ev.preventDefault();
+            if(!t.disabled){
+              setActive(t);
+            }
+          }
+          // Allow pressing 'r' to re-enable all thumbs (convenience for keyboard users)
+          if(ev.key === 'r' || ev.key === 'R'){
+            thumbs.forEach(x => {
+              x.disabled = false;
+              x.setAttribute('aria-disabled', 'false');
+              x.setAttribute('aria-pressed', x === t ? 'true' : 'false');
+              x.setAttribute('aria-selected', x === t ? 'true' : 'false');
+            });
+          }
+        });
+      });
+
+      // Ensure panels' aria-hidden state is consistent
+      function syncAriaPanels(){
+        panels.forEach(p => {
+          const linked = document.querySelector(`[data-panel="${p.id}"]`);
+          if(p.classList.contains('active')){
+            p.removeAttribute('aria-hidden');
+            if(linked) linked.setAttribute('aria-selected','true');
+          } else {
+            p.setAttribute('aria-hidden','true');
+            if(linked) linked.setAttribute('aria-selected','false');
+          }
+        });
+      }
+      // Call on load and whenever active changes (simple interval to keep in sync)
+      syncAriaPanels();
+      new MutationObserver(syncAriaPanels).observe(document.querySelector('main'), { attributes: true, subtree:true, attributeFilter:['class'] });
+
+    })();
+  </script>
+</body>
+</html>
