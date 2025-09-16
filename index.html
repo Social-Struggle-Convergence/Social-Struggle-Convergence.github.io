@@ -151,7 +151,7 @@
     <h1>Social Struggles Convergence</h1>
     <p class="lead">
       This will site help people find independent media, join communities, discover actionable ideas for impact, and locate accessible tools that support their struggles.
-      <br> You can contribute to this project and add information to it usign GitHub push request. 
+      <br> Anyone can contribute to this project and add information to it using GitHub push request. It is easier that it seems. 
     </p>
   </header>
 
@@ -281,128 +281,48 @@
   </main>
 
   <script>
-    // Behavior:
-    // - Only one thumbnail is "enabled" (not disabled) and marked aria-pressed="true".
-    // - Clicking a non-disabled thumb will make it the active one, disable the previously active thumb,
-    //   update aria attributes and show the corresponding panel.
-    // - This implements the user's requirement: "one enabled at a time only, disable the other thumbnails and define what is displayed below".
-    (function(){
-      const thumbs = Array.from(document.querySelectorAll('.thumb'));
-      const panels = Array.from(document.querySelectorAll('.panel'));
+(function(){
+  const thumbs = Array.from(document.querySelectorAll('.thumb'));
+  const panels = Array.from(document.querySelectorAll('.panel'));
 
-      // init: keep first thumb enabled and others enabled too so user can choose.
-      // But we will treat "enabled" visually as aria-pressed="true" and "disabled" attribute on other thumbs.
-      // To obey "one enabled at a time", we will set other thumbs disabled except the initially-active one.
-      const initial = thumbs.find(t => t.getAttribute('aria-pressed') === 'true') || thumbs[0];
+  function setActive(newActive){
+    // Reset all thumbs and panels
+    thumbs.forEach(t => {
+      t.setAttribute('aria-pressed', 'false');
+      t.setAttribute('aria-selected', 'false');
+      t.classList.remove('active');
+    });
+    panels.forEach(p => p.classList.remove('active'));
 
-      function setActive(newActive){
-        // find previous active
-        const prev = thumbs.find(t => t.getAttribute('aria-pressed') === 'true');
+    // Activate the chosen thumb
+    newActive.setAttribute('aria-pressed', 'true');
+    newActive.setAttribute('aria-selected', 'true');
+    newActive.classList.add('active');
 
-        if(prev && prev !== newActive){
-          prev.setAttribute('aria-pressed', 'false');
-          prev.setAttribute('aria-selected', 'false');
-          // disable previously-active thumb so only the newActive remains enabled (per requirement)
-          prev.disabled = true;
-          prev.setAttribute('aria-disabled', 'true');
-        }
+    // Show its panel
+    const panelId = newActive.dataset.panel;
+    const panel = document.getElementById(panelId);
+    if(panel){
+      panel.classList.add('active');
+    }
+  }
 
-        // enable and set newActive
-        newActive.removeAttribute('disabled');
-        newActive.setAttribute('aria-disabled', 'false');
-        newActive.setAttribute('aria-pressed', 'true');
-        newActive.setAttribute('aria-selected', 'true');
+  // Initialize first as active
+  const initial = thumbs.find(t => t.getAttribute('aria-pressed') === 'true') || thumbs[0];
+  if(initial) setActive(initial);
 
-        // show related panel, hide others
-        const panelId = newActive.dataset.panel;
-        panels.forEach(p => {
-          if(p.id === panelId){
-            p.classList.add('active');
-          } else {
-            p.classList.remove('active');
-          }
-        });
-
-        // Set focus to the newly active button for clarity (if it was clicked).
-        newActive.focus();
+  // Event listeners
+  thumbs.forEach(t => {
+    t.addEventListener('click', () => setActive(t));
+    t.addEventListener('keydown', (ev) => {
+      if(ev.key === 'Enter' || ev.key === ' '){
+        ev.preventDefault();
+        setActive(t);
       }
+    });
+  });
+})();
+</script>
 
-      // initialize: disable all except initial (to follow the "one enabled only" instruction)
-      thumbs.forEach(t => {
-        if(t !== initial){
-          t.disabled = true;
-          t.setAttribute('aria-disabled', 'true');
-          t.setAttribute('aria-pressed', 'false');
-          t.setAttribute('aria-selected', 'false');
-        } else {
-          t.disabled = false;
-          t.setAttribute('aria-disabled', 'false');
-          t.setAttribute('aria-pressed', 'true');
-          t.setAttribute('aria-selected', 'true');
-        }
-      });
-
-      // Allow clicks on thumbnails: if disabled, clicking does nothing.
-      thumbs.forEach(t => {
-        t.addEventListener('click', (ev) => {
-          if(t.disabled){
-            // If disabled, we still want users to be able to re-enable it by using a modifier:
-            // Ctrl+Click (or Meta+Click) will force-enable and switch; this keeps normal behavior simple.
-            if(ev.ctrlKey || ev.metaKey){
-              // re-enable previously disabled thumbs so we can change selection
-              // make all non-active enabled so the user can pick, then activate clicked one.
-              thumbs.forEach(x => {
-                x.disabled = false;
-                x.setAttribute('aria-disabled', 'false');
-              });
-              setActive(t);
-              return;
-            }
-            return;
-          }
-          // If the clicked one is already active, nothing to do.
-          if(t.getAttribute('aria-pressed') === 'true') return;
-          setActive(t);
-        });
-
-        // Keyboard support: Enter or Space activates if not disabled.
-        t.addEventListener('keydown', (ev) => {
-          if(ev.key === 'Enter' || ev.key === ' '){
-            ev.preventDefault();
-            if(!t.disabled){
-              setActive(t);
-            }
-          }
-          // Allow pressing 'r' to re-enable all thumbs (convenience for keyboard users)
-          if(ev.key === 'r' || ev.key === 'R'){
-            thumbs.forEach(x => {
-              x.disabled = false;
-              x.setAttribute('aria-disabled', 'false');
-              x.setAttribute('aria-pressed', x === t ? 'true' : 'false');
-              x.setAttribute('aria-selected', x === t ? 'true' : 'false');
-            });
-          }
-        });
-      });
-
-      // Ensure panels' aria-hidden state is consistent
-      function syncAriaPanels(){
-        panels.forEach(p => {
-          const linked = document.querySelector(`[data-panel="${p.id}"]`);
-          if(p.classList.contains('active')){
-            p.removeAttribute('aria-hidden');
-            if(linked) linked.setAttribute('aria-selected','true');
-          } else {
-            p.setAttribute('aria-hidden','true');
-            if(linked) linked.setAttribute('aria-selected','false');
-          }
-        });
-      }
-      // Call on load and whenever active changes (simple interval to keep in sync)
-      syncAriaPanels();
-      new MutationObserver(syncAriaPanels).observe(document.querySelector('main'), { attributes: true, subtree:true, attributeFilter:['class'] });
-
-    })();
-  </script>
 </body>
 </html>
